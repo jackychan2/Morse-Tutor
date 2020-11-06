@@ -8,7 +8,11 @@
                 Open Source under the terms of the MIT License.
 
        Otros:   Código modificado y traducido por EA4AOJ & EA4HEW 2020
-                Adaptacion sin imagenes por EA7JCL
+                
+                -Adaptacion sin imagenes y añadido reconocimiento de Ñ en practica simple 
+                Para adaptar a tu indicativo modifica el valor de las varialbles myCall y INDICATIVO
+                por EA7JCL
+             
  Description:   Practice sending & receiving morse code
                 Inspired by Jack Purdum's "Morse Code Tutor"
 
@@ -57,8 +61,8 @@ Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC, TFT_RST);
 
 //===================================  Wireless Constants ===============================
 #define CHANNEL             1                     // Wifi channel number
-#define WIFI_SSID      "EA7JCL_Tutor"             // Wifi network name
-#define WIFI_PWD       "morsetutor"               // Wifi password
+#define WIFI_SSID      "sssid"             // Wifi network name
+#define WIFI_PWD       "password"               // Wifi password
 #define MAXBUFLEN         100                     // size of incoming character buffer
 #define CMD_ADDME        0x11                     // request to add this unit as a peer
 #define CMD_LEAVING      0x12                     // flag this unit as leaving
@@ -138,7 +142,7 @@ volatile long     button_downtime  = 0L;          // ms the button was pushed be
                     // from The Brown Corpus Standard Sample of Present-Day American English 
                     // (Providence, RI: Brown University Press, 1979)
                     
-char *words[]     = {"THE", "OF", "AND", "TO", "A", "IN", "THAT", "IS", "WAS", "HE", 
+char *words[]     = {"THE", "OF", "AND", "TO", "A", "IN", "THAT", "IS", "WAS", "HE", "ÑOÑO",
                      "FOR", "IT", "WITH", "AS", "HIS", "ON", "BE", "AT", "BY", "I", 
                      "THIS", "HAD", "NOT", "ARE", "BUT", "FROM", "OR", "HAVE", "AN", "THEY", 
                      "WHICH", "ONE", "YOU", "WERE", "ALL", "HER", "SHE", "THERE", "WOULD", "THEIR", 
@@ -151,14 +155,14 @@ char *words[]     = {"THE", "OF", "AND", "TO", "A", "IN", "THAT", "IS", "WAS", "
                     };
 char *antenna[]   = {"YAGI", "DIPOLE", "VERTICAL", "HEXBEAM", "MAGLOOP"};
 char *weather[]   = {"HOT", "SUNNY", "WARM", "CLOUDY", "RAINY", "COLD", "SNOWY", "CHILLY", "WINDY", "FOGGY"};
-char *names[]     = {"JOSE LUIS", "ALBERTO", "CARLOS", "MIGUEL", "SARA", "GABRIEL", "FERNANDO", "LUIS", "ALFONSO",
+char *names[]     = {"JOSE ANTONIO", "HUGO", "CARLOS", "MIGUEL", "SARA", "ENMA", "FERNANDO", "LUIS", "ALFONSO",
                      "SANTIAGO", "ENRIQUE", "DANI", "KEVIN", "LINO", "PABLO", "VICENTE"};
 char *cities[]    = {"DAYTON, OH", "HADDONFIELD, NJ", "MURRYSVILLE, PA", "BALTIMORE, MD", "ANN ARBOR, MI", 
                      "BOULDER, CO", "BILLINGS, MT", "SANIBEL, FL", "CIMMARON, NM", "TYLER, TX", "OLYMPIA, WA"};
 char *rigs[]      = {"YAESU FT101", "KENWOOD 780", "ELECRAFT K3", "HOMEBREW", "KENWOOD TS50", "ICOM 7300", "FLEX 6400"};
 char punctuation[]= "!@$&()-+=,.:;'/";
 char prefix[]     = {'A', 'W', 'K', 'N'};
-char koch[]       = "KMRSUAPTLOWI.NJEF0Y,VG5/Q9ZH38B?427CLD6X";
+char koch[]       = "KMRSUAPTLOWI.NJEF0Y,VG5/Q9ZH38B?427CLD6XÑ";
 byte morse[] = {                                  // Each character is encoded into an 8-bit byte:
   0b01001010,        // ! exclamation        
   0b01101101,        // " quotation          
@@ -217,7 +221,8 @@ byte morse[] = {                                  // Each character is encoded i
   0b00001001,        // W
   0b00010110,        // X
   0b00010010,        // Y 
-  0b00011100         // Z
+  0b00011100,        // Z
+  0b00100100         // Ñ 
 };
 
 int charSpeed   = DEFAULTSPEED;                   // speed at which characters are sent, in WPM
@@ -238,6 +243,7 @@ bool ditRequest = false;                          // dit memory for iambic sendi
 bool dahRequest = false;                          // dah memory for iambic sending
 bool inStartup  = true;                           // startup flag
 char myCall[10] = "EA7JCL";
+#define INDICATIVO "EA7JCL"
 int textColor   = TEXTCOLOR;                      // foreground (text) color
 int bgColor     = BG;                             // background (screen) color
 int brightness  = 100;                            // backlight level (range 0-100%)
@@ -1176,11 +1182,20 @@ void practice()                                   // get Morse from user & displ
   while (!button_pressed) 
   {
     char ch = morseInput();                       // get a morse character from user
-    if (!((ch==' ') && (oldCh==' ')))             // only 1 word space at a time.
-      addCharacter(ch);                           // show character on display
-    oldCh = ch;                                   // and remember it 
+    if (!((ch==' ') && (oldCh==' '))){             // only 1 word space at a time.
+       if (ch == '[')
+       { ch='Ñ';
+          addCharacter(ch);
+          ch =' ';
+       }
+      else{
+        addCharacter(ch);                           // show character on display
+      }
+    }
   }
+ 
 }
+
 
 void copyCallsigns()                              // show a callsign & see if user can copy it
 {
@@ -1465,7 +1480,7 @@ void checkConfig()                                // ensure config settings are 
   if (xWordSpaces>MAXWORDSPACES)                  // validate word spaces
      xWordSpaces = 0;
   if (!isAlphaNumeric(myCall[0]))                 // validate callsign
-     strcpy(myCall,"EA7JCL");
+     strcpy(myCall, INDICATIVO);
   if ((keyerMode<0)||(keyerMode>2))               // validate keyer mode
     keyerMode = IAMBIC_B;
   if ((brightness<10)||(brightness>100)) 
@@ -1489,7 +1504,7 @@ void useDefaults()                                // if things get messed up...
   kochLevel   = 1;
   usePaddles  = true;
   xWordSpaces = 0;
-  strcpy(myCall,"EA7JCL");
+  strcpy(myCall,INDICATIVO);
   keyerMode   = IAMBIC_B;
   brightness  = 100;
   textColor   = TEXTCOLOR;
@@ -2067,7 +2082,8 @@ void splashScreen()                               // not splashy at all!
   tft.setTextColor(WHITE);
   tft.print("Copyright (c) 2020, Bruce E. Hall"); // legal small print
   tft.setCursor(35,220);
-  tft.print("Adaptado por EA7JCL"); // legal small print
+  tft.print("Adaptado por ");
+  tft.print(INDICATIVO); // legal small print
   tft.setTextSize(2);
 }
 
