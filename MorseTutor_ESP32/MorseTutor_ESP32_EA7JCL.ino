@@ -142,7 +142,7 @@ volatile long     button_downtime  = 0L;          // ms the button was pushed be
                     // from The Brown Corpus Standard Sample of Present-Day American English 
                     // (Providence, RI: Brown University Press, 1979)
                     
-char *words[]     = {"THE", "OF", "AND", "TO", "A", "IN", "THAT", "IS", "WAS", "HE", "ÑOÑO",
+char *words[]     = {"THE", "OF", "AND", "TO", "A", "IN", "THAT", "IS", "WAS", "HE",
                      "FOR", "IT", "WITH", "AS", "HIS", "ON", "BE", "AT", "BY", "I", 
                      "THIS", "HAD", "NOT", "ARE", "BUT", "FROM", "OR", "HAVE", "AN", "THEY", 
                      "WHICH", "ONE", "YOU", "WERE", "ALL", "HER", "SHE", "THERE", "WOULD", "THEIR", 
